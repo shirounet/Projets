@@ -4,13 +4,17 @@
 #include "header.h"
 
 int main() {
-
-    struct Personne repertoire[100];
-    int pro[100];
-
-    int nbrperso=0;             // Le nombre de personne(s) existante(s)
-    int nbrpro=0;               // Le nombre de personne(s) professionelle(s)
-    char code;             // Code de transation
+	/*					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~					*/
+	//																			//
+	//					DEBUT	-	DECLARATION DES VARIABLES					//
+	//																			//
+	/*					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~					*/
+	
+    struct Personne repertoire[100] = { 0 };	// repertoire de 100 personnes
+    int pro[100];								// tableau de 100 professionels
+    int nbrperso = 0;							// Le nombre de personne(s) existante(s)
+    int nbrpro = 0;								// Le nombre de personne(s) professionelle(s)
+    char code;									// code de transaction
 
     printf("[~] Hi, please enter code:\n"); // Bonjour
     code=getchar();
@@ -20,10 +24,10 @@ int main() {
                                      inscription(repertoire, &nbrperso, pro, &nbrpro);
                                       break;
                                  case 'S':
-                                     supprimer(repertoire, &nbrperso);
+                                     supprimer(repertoire, &nbrperso, pro, &nbrpro);
                                         break;
                                  case 'M':
-                                     modification(repertoire, &nbrperso);
+                                     modification(repertoire, &nbrperso, pro, &nbrpro);
                                       break;
                                  case 'T':
                                      affichage(repertoire, nbrperso);
@@ -65,7 +69,7 @@ void inscription(struct Personne *repertoire, int *nbrperso, int *pro, int *nbrp
     gets(repertoire[*nbrperso].prenom);
 
     int rech=recherche(repertoire, *nbrperso);
-    printf("RECH %d NBRPERSO %d\n\n", rech, *nbrperso);
+
     if(rech<0) {
         printf("[~] Enter <telephone number> :\n");
         fflush(stdin);
@@ -81,11 +85,24 @@ void inscription(struct Personne *repertoire, int *nbrperso, int *pro, int *nbrp
             scanf("%d",&(repertoire[*nbrperso].cat));
         }
 
-        if(*nbrperso) {
-            tri(repertoire, *nbrperso, pro, *nbrpro);
+        int i;                                   // ON TRI LE repertoire
+        struct Personne temp;
+        for(i=0;i<*nbrperso && (strcmp(repertoire[*nbrperso].nom, repertoire[i].nom)!=-1);i++);
+        for(i;i<*nbrperso;i++) {
+        temp=repertoire[i];
+        repertoire[i]=repertoire[*nbrperso];
+        repertoire[*nbrperso]=temp;
         }
 
         *nbrperso=*nbrperso+1; // Incrementation number of contacts
+
+                               *nbrpro=0; // ON CREE LE TAB PRO
+                               for(i=0; i<*nbrperso; i++) {
+                               if(repertoire[i].cat) {
+                                                           pro[*nbrpro]=i;
+                                                           *nbrpro=(*nbrpro)+1;
+                                                           }
+                                     }
     }
     else
     {
@@ -94,7 +111,7 @@ void inscription(struct Personne *repertoire, int *nbrperso, int *pro, int *nbrp
     }
 }
 
-void supprimer(struct Personne* repertoire, int *nbrperso) {
+void supprimer(struct Personne* repertoire, int *nbrperso, int *pro, int *nbrpro) {
     printf("[~] Enter <last name> :\n");
     fflush(stdin);
     gets(repertoire[*nbrperso].nom);
@@ -114,10 +131,21 @@ void supprimer(struct Personne* repertoire, int *nbrperso) {
             } while(((r)!='Y') && ((r)!='N'));
 
             if(r=='Y') {
-                    for(rech;rech<*nbrperso;rech++) {
-                        repertoire[rech]=repertoire[rech+1];
+
+                       int i;
+                       for(rech;rech<*nbrperso;rech++) { // ON TRI LE repertoire
+                       repertoire[rech]=repertoire[rech+1];
+                       }
+
+                       *nbrperso=*nbrperso-1; // ON DECREMENTE LE NBR DE PERSO
+
+                        *nbrpro=0;                          // CREATION TAB PRO
+                        for(i=0; i<*nbrperso; i++) {
+                                 if(repertoire[i].cat) {
+                                 pro[*nbrpro]=i;
+                                 *nbrpro=(*nbrpro)+1;
+                                 }
                         }
-                        *nbrperso=*nbrperso-1;
             }
     }
     else
@@ -126,7 +154,7 @@ void supprimer(struct Personne* repertoire, int *nbrperso) {
     }
 }
 
-void modification(struct Personne* repertoire, int *nbrperso) {
+void modification(struct Personne* repertoire, int *nbrperso, int *pro, int *nbrpro) {
     printf("[~] Enter <last name> :\n");
     fflush(stdin);
     gets(repertoire[*nbrperso].nom);
@@ -167,7 +195,25 @@ void modification(struct Personne* repertoire, int *nbrperso) {
                                 scanf("%d",&(repertoire[*nbrperso].cat));
                                 }
 
-                            repertoire[imod]=repertoire[*nbrperso];
+                            repertoire[imod]=repertoire[*nbrperso]; // ON EFFECTUE LA MODIF DE NOM PRENOM
+
+                            int i; // ON TRI LE TAB
+                            struct Personne temp;
+                            for(i=0;i<*nbrperso && (strcmp(repertoire[imod].nom, repertoire[i].nom)!=-1);i++);
+                            for(i;i<imod;i++) {
+                            temp=repertoire[i];
+                            repertoire[i]=repertoire[imod];
+                            repertoire[imod]=temp;
+                            }
+
+                            *nbrpro=0;                 // ON CREE LE TAB PRO
+                            for(i=0; i<*nbrperso; i++) {
+                                     if(repertoire[i].cat) {
+                                                           pro[*nbrpro]=i;
+                                                           *nbrpro=(*nbrpro)+1;
+                                                           }
+                                     }
+
                         }
                         else
                         {
@@ -194,7 +240,7 @@ int recherche(struct Personne *repertoire, int nbrperso) {
     return -1; // Return -1 if Contact Unknow
 }
 
-int tri(struct Personne *repertoire, int nbrperso, int *pro, int nbrpro)
+int tri(struct Personne *repertoire, int nbrperso, int *pro, int nbrpro) // OBSOLETE
 {
     int i, ii;
     struct Personne temp;
@@ -216,11 +262,9 @@ void affichage(struct Personne *repertoire, int nbrperso)
     }
 }
 
-void affichagepro(struct Personne *repertoire,int nbrperso, int *pro, int nbrpro) {
+void affichagepro(struct Personne *repertoire, int nbrperso, int *pro, int nbrpro) {
     int i;
-    for(i=0;i<nbrperso;i++) {
-        if(repertoire[i].cat) {
-            printf("Last Name :%s\nFirst Name :%s\nTelephone Number :%s\nCat : %d\n----------\n", repertoire[i].nom,repertoire[i].prenom,repertoire[i].tel,repertoire[i].cat);
-        }
+    for(i=0;i<nbrpro;i++) {
+            printf("Last Name :%s\nFirst Name :%s\nTelephone Number :%s\nCat : %d\n----------\n", repertoire[pro[i]].nom,repertoire[pro[i]].prenom,repertoire[pro[i]].tel,repertoire[pro[i]].cat);
     }
 }
