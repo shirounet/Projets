@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "header.h"
+#include "header.h"  bonne idée le header mec 
 
 int main() {			// DEBUT main()
 
 	/*					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~					*/
 	//																			//
-	//					DEBUT	-	DECLARATION DES VARIABLES					//
+	//					DEBUT	-	DECLARATION DES VARIABLES    Super toufik ! 					//
 	//																			//
 	/*					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~					*/
 	
@@ -480,3 +480,5 @@ void rech_char(struct Personne *repertoire, int nbrperso, int *pro, int nbrpro) 
                   }
      }
 }
+
+franchement si bien hambullah ji suis fier di toi 
